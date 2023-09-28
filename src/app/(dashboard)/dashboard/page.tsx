@@ -1,10 +1,15 @@
-import { authOptions } from '@/lib/auth';
-import { getServerSession } from 'next-auth';
+import Link from 'next/link';
 import React from 'react';
 
 export default async function Dashboard() {
-	const session = await getServerSession();
-	console.log(session);
+	console.log('DASHBOARD');
 
-	return <div>Dashboard</div>;
+	return (
+		<div>
+			<h1>Dashboard</h1>
+			<div>
+				<Link href="/about">About</Link>
+			</div>
+		</div>
+	);
 }

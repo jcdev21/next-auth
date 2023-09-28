@@ -2,6 +2,15 @@ import type { NextAuthOptions } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 
 export const authOptions: NextAuthOptions = {
+	pages: {
+		signIn: '/login',
+	},
+	session: {
+		strategy: 'jwt',
+	},
+	// jwt: {
+	// 	secret: process.env.NEXTAUTH_SECRET,
+	// },
 	providers: [
 		Credentials({
 			name: 'credentials',
@@ -11,11 +20,9 @@ export const authOptions: NextAuthOptions = {
 			},
 			async authorize(credentials) {
 				const user = Promise.resolve({
-					id: 1,
+					id: 'userId',
 					email: credentials?.email,
-					role: 'ADMIN',
 				});
-				console.log('credentials', credentials);
 
 				if (user) {
 					return user.then();
@@ -25,13 +32,28 @@ export const authOptions: NextAuthOptions = {
 			},
 		}),
 	],
-	pages: {
-		signIn: '/login',
-	},
-	session: {
-		strategy: 'jwt',
-	},
-	jwt: {
-		secret: process.env.NEXTAUTH_SECRET,
+	callbacks: {
+		async session({ session, token, user }) {
+			if (token) {
+				session.user.id = token.id;
+				session.user.name = token.name;
+				session.user.email = token.email;
+				session.user.image = token.picture;
+				session.user.role = token.role;
+			}
+
+			return session;
+		},
+		async jwt({ token, user }) {
+			// get data from db
+
+			return {
+				id: 'userId',
+				email: user?.email || token.email,
+				name: 'JUNDI',
+				picture: 'image-path',
+				role: 'ADMIN',
+			};
+		},
 	},
 };
