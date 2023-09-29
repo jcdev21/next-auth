@@ -1,12 +1,14 @@
 import type { NextAuthOptions } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
+import { db } from './db';
+import { compare } from 'bcrypt';
 
 export const authOptions: NextAuthOptions = {
-	pages: {
-		signIn: '/login',
-	},
 	session: {
 		strategy: 'jwt',
+	},
+	pages: {
+		signIn: '/login',
 	},
 	providers: [
 		Credentials({
@@ -16,21 +18,18 @@ export const authOptions: NextAuthOptions = {
 				password: { label: 'Password', type: 'password' },
 			},
 			async authorize(credentials) {
-				// get data from db with credentials
-
-				if (credentials?.email !== 'superadmin@gmail.com') {
-					throw Error('Failed login');
-				}
-
-				const user = Promise.resolve({
-					id: 'userId',
-					email: credentials?.email,
+				const user = await db.user.findUnique({
+					where: { email: credentials?.email },
 				});
 
-				if (user) {
-					return user.then();
+				if (
+					user &&
+					credentials?.password &&
+					(await compare(credentials.password, user.password))
+				) {
+					return user;
 				} else {
-					throw Error('Error oii');
+					throw Error('Failed login');
 				}
 			},
 		}),
@@ -48,14 +47,23 @@ export const authOptions: NextAuthOptions = {
 			return session;
 		},
 		async jwt({ token, user }) {
-			// get data from db
+			const dbUser = await db.user.findFirst({
+				where: { email: token.email! },
+			});
+
+			if (!dbUser) {
+				if (user) {
+					token.id = user.id;
+				}
+				return token;
+			}
 
 			return {
-				id: 'userId',
-				email: user?.email || token.email,
-				name: 'JUNDI',
-				picture: 'image-path',
-				role: 'ADMIN',
+				id: dbUser.id,
+				email: dbUser.email,
+				name: dbUser.email,
+				picture: dbUser.image,
+				role: dbUser.role,
 			};
 		},
 	},

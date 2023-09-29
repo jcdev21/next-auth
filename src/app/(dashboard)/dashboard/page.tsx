@@ -1,8 +1,12 @@
+import { authOptions } from '@/lib/auth';
+import { getServerSession } from 'next-auth';
 import Link from 'next/link';
 import React from 'react';
+import Info from './Info';
 
 export default async function Dashboard() {
-	console.log('DASHBOARD');
+	const session = await getServerSession(authOptions);
+	console.log(session);
 
 	return (
 		<div>
@@ -10,6 +14,7 @@ export default async function Dashboard() {
 			<div>
 				<Link href="/about">About</Link>
 			</div>
+			<Info />
 		</div>
 	);
 }
