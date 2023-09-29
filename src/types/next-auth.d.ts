@@ -2,7 +2,7 @@ import { User } from 'next-auth';
 import { JWT } from 'next-auth/jwt';
 
 type UserId = string;
-type Role = 'USER' | 'ADMIN';
+type Role = 'ADMIN' | 'MEMBER';
 
 declare module 'next-auth/jwt' {
 	interface JWT {

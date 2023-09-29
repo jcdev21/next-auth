@@ -8,9 +8,6 @@ export const authOptions: NextAuthOptions = {
 	session: {
 		strategy: 'jwt',
 	},
-	// jwt: {
-	// 	secret: process.env.NEXTAUTH_SECRET,
-	// },
 	providers: [
 		Credentials({
 			name: 'credentials',
@@ -19,6 +16,12 @@ export const authOptions: NextAuthOptions = {
 				password: { label: 'Password', type: 'password' },
 			},
 			async authorize(credentials) {
+				// get data from db with credentials
+
+				if (credentials?.email !== 'superadmin@gmail.com') {
+					throw Error('Failed login');
+				}
+
 				const user = Promise.resolve({
 					id: 'userId',
 					email: credentials?.email,
