@@ -51,8 +51,15 @@ export default function FormLogin() {
 					className="w-full px-4 py-2 border border-slate-200"
 				/>
 			</div>
-			<div>
-				<button>Sign In</button>
+			<div className="flex gap-5">
+				<button className="bg-slate-400 p-2">SignIn</button>
+				<button
+					type="button"
+					className="bg-slate-400 p-2"
+					onClick={() => signIn('google', { redirect: false })}
+				>
+					Google
+				</button>
 			</div>
 		</form>
 	);

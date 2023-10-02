@@ -1,4 +1,4 @@
-import { User } from 'next-auth';
+import { DefaultUser, User } from 'next-auth';
 import { JWT } from 'next-auth/jwt';
 
 type UserId = string;
@@ -17,5 +17,9 @@ declare module 'next-auth' {
 			id: UserId;
 			role?: Role;
 		};
+	}
+
+	interface User extends DefaultUser {
+		role?: Role;
 	}
 }

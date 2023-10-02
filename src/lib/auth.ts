@@ -1,9 +1,27 @@
 import type { NextAuthOptions } from 'next-auth';
-import Credentials from 'next-auth/providers/credentials';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import GoogleProvider from 'next-auth/providers/google';
 import { db } from './db';
 import { compare } from 'bcrypt';
+import { PrismaAdapter } from '@next-auth/prisma-adapter';
+import { Role } from '@prisma/client';
+
+const prismaAdapter = PrismaAdapter(db);
+
+// @ts-ignore
+prismaAdapter.createUser = (data) => {
+	const role = 'MEMBER' as Role;
+	const payload = {
+		...data,
+		role,
+		password: '',
+	};
+
+	return db.user.create({ data: payload });
+};
 
 export const authOptions: NextAuthOptions = {
+	adapter: prismaAdapter,
 	session: {
 		strategy: 'jwt',
 	},
@@ -11,7 +29,7 @@ export const authOptions: NextAuthOptions = {
 		signIn: '/login',
 	},
 	providers: [
-		Credentials({
+		CredentialsProvider({
 			name: 'credentials',
 			credentials: {
 				email: { label: 'Email', type: 'email' },
@@ -33,6 +51,10 @@ export const authOptions: NextAuthOptions = {
 				}
 			},
 		}),
+		GoogleProvider({
+			clientId: process.env.GOOGLE_CLIENT_ID ?? '',
+			clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? '',
+		}),
 	],
 	callbacks: {
 		async session({ session, token, user }) {
@@ -46,25 +68,33 @@ export const authOptions: NextAuthOptions = {
 
 			return session;
 		},
-		async jwt({ token, user }) {
-			const dbUser = await db.user.findFirst({
-				where: { email: token.email! },
-			});
+		async jwt({ token, user, account, profile }) {
+			if (account?.provider === 'google') {
+				token.id = user.id;
+				token.email = user.email;
+				token.name = user.name;
+				token.picture = user.image;
+				token.role = user.role;
+			} else if (account?.provider === 'credentials') {
+				const dbUser = await db.user.findFirst({
+					where: { email: token.email! },
+				});
 
-			if (!dbUser) {
-				if (user) {
-					token.id = user.id;
+				if (!dbUser) {
+					if (user) {
+						token.id = user.id;
+					}
+					return token;
 				}
-				return token;
+
+				token.id = dbUser.id;
+				token.email = dbUser.email;
+				token.name = dbUser.name;
+				token.picture = dbUser.image;
+				token.role = dbUser.role;
 			}
 
-			return {
-				id: dbUser.id,
-				email: dbUser.email,
-				name: dbUser.name,
-				picture: dbUser.image,
-				role: dbUser.role,
-			};
+			return token;
 		},
 	},
 };
