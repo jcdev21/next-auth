@@ -47,7 +47,7 @@ export const authOptions: NextAuthOptions = {
 				) {
 					return user;
 				} else {
-					throw Error('Failed login');
+					throw new Error('Failed login');
 				}
 			},
 		}),
