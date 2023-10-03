@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple</title>
+  <style>
+    h3.sayhi {
+      color: darkcyan;
+    }
+  </style>
+</head>
+
+<body>
+  <h3 class="sayhi">Hy, {{ name }}</h3>
+  <p>Click link to verification your account : <a
+      href="http://localhost:3000/api/auth/activate/{{ token }}">http://localhost:3000/api/auth/activate/{{ token }}</a>
+  </p>
+</body>
+
+</html>

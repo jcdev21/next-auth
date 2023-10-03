@@ -1,32 +1,45 @@
 'use client';
 
-import { signIn } from 'next-auth/react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 
-export default function FormLogin() {
+export default function FormRegister() {
 	const router = useRouter();
 
 	const submitHandle = async (e: React.SyntheticEvent) => {
 		e.preventDefault();
 		const target = e.target as typeof e.target & {
+			name: { value: string };
 			email: { value: string };
 			password: { value: string };
 		};
+		const name = target.name.value;
 		const email = target.email.value;
 		const password = target.password.value;
-		const res = await signIn('credentials', {
-			redirect: false,
+
+		if (!name || !email || !password) return;
+
+		const payload = {
+			name,
 			email,
 			password,
-		});
+			role: 'MEMBER',
+		};
 
-		if (!res?.error) {
-			router.push('/dashboard');
-		} else {
+		try {
+			const res = await fetch('/api/auth/register', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(payload),
+			});
+
+			await res.json();
+			router.push('/login');
+		} catch (error) {
 			console.log('ERROR');
-			console.log(res);
+			console.log(error);
 		}
 	};
 
@@ -36,6 +49,14 @@ export default function FormLogin() {
 			onSubmit={submitHandle}
 			className="w-[350px] p-10 flex flex-col gap-8 border border-slate-200"
 		>
+			<div>
+				<input
+					type="text"
+					name="name"
+					placeholder="Name"
+					className="w-full px-4 py-2 border border-slate-200"
+				/>
+			</div>
 			<div>
 				<input
 					type="email"
@@ -53,20 +74,7 @@ export default function FormLogin() {
 				/>
 			</div>
 			<div className="flex gap-5">
-				<button className="bg-slate-400 p-2">SignIn</button>
-				<button
-					type="button"
-					className="bg-slate-400 p-2"
-					onClick={() => signIn('google', { redirect: false })}
-				>
-					Google
-				</button>
-			</div>
-			<div>
-				<p>don&apos;t have an account?</p>
-				<Link href="/register" className="text-sky-400">
-					Register
-				</Link>
+				<button className="bg-slate-400 p-2">SignUp</button>
 			</div>
 		</form>
 	);

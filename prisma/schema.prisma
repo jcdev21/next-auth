@@ -39,37 +39,42 @@ model Account {
 }
 
 model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
+  id           String       @id @default(cuid())
+  sessionToken String       @unique
   userId       String
   expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map(name: "sessions")
 }
 
 model User {
-  id            String @id @default(cuid())
+  id            String      @id @default(cuid())
   name          String?
-  email         String @unique
+  email         String      @unique
   emailVerified DateTime?
   password      String
   image         String?
-  role Role
+  role          Role
   type          String?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  active        Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 
   accounts Account[]
   sessions Session[]
+  verificationToken VerificationToken[]
+
 
   @@map(name: "users")
 }
 
 model VerificationToken {
   identifier String
-  token      String   @unique
+  token      String       @unique
   expires    DateTime
+
+  user User @relation(fields: [identifier], references: [id], onDelete: Cascade)
 
   @@unique([identifier, token])
   @@map(name: "verification_tokens")

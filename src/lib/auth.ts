@@ -15,6 +15,7 @@ prismaAdapter.createUser = (data) => {
 		...data,
 		role,
 		password: '',
+		active: true,
 	};
 
 	return db.user.create({ data: payload });
@@ -40,6 +41,14 @@ export const authOptions: NextAuthOptions = {
 					where: { email: credentials?.email },
 				});
 
+				if (!user) {
+					return null;
+				}
+
+				if (!user.active) {
+					throw new Error('User is not active');
+				}
+
 				if (
 					user &&
 					credentials?.password &&
@@ -57,17 +66,6 @@ export const authOptions: NextAuthOptions = {
 		}),
 	],
 	callbacks: {
-		async session({ session, token, user }) {
-			if (token) {
-				session.user.id = token.id;
-				session.user.name = token.name;
-				session.user.email = token.email;
-				session.user.image = token.picture;
-				session.user.role = token.role;
-			}
-
-			return session;
-		},
 		async jwt({ token, user, account, profile }) {
 			if (account?.provider === 'google') {
 				token.id = user.id;
@@ -95,6 +93,17 @@ export const authOptions: NextAuthOptions = {
 			}
 
 			return token;
+		},
+		async session({ session, token, user }) {
+			if (token) {
+				session.user.id = token.id;
+				session.user.name = token.name;
+				session.user.email = token.email;
+				session.user.image = token.picture;
+				session.user.role = token.role;
+			}
+
+			return session;
 		},
 	},
 };
