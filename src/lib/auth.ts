@@ -15,6 +15,7 @@ prismaAdapter.createUser = (data) => {
 		...data,
 		role,
 		password: '',
+		type: 'google',
 		active: true,
 	};
 
