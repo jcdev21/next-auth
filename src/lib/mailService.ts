@@ -7,7 +7,9 @@ export async function sendMail(
 	subject: string,
 	toEmail: string,
 	bodyText: string,
-	payload?: { [key: string]: string | number | Date | boolean | null }
+	payload?: {
+		[key: string]: string | number | Date | boolean | null | undefined;
+	}
 ) {
 	const transporter = nodemailer.createTransport({
 		service: 'gmail',
@@ -21,7 +23,10 @@ export async function sendMail(
 		from: process.env.NODEMAILER_EMAIL,
 		to: toEmail,
 		subject,
-		html: mustache.render(bodyText, { ...payload }),
+		html: mustache.render(bodyText, {
+			...payload,
+			appUrl: process.env.APP_URL,
+		}),
 	};
 
 	await new Promise((resolve, reject) => {
