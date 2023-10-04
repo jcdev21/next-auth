@@ -36,7 +36,7 @@ export default function FormRegister() {
 			});
 
 			await res.json();
-			router.push('/login');
+			router.push('/login?registered=success');
 		} catch (error) {
 			console.log('ERROR');
 			console.log(error);
