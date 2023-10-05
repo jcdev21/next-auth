@@ -9,7 +9,7 @@ import { Role } from '@prisma/client';
 const prismaAdapter = PrismaAdapter(db);
 
 // @ts-ignore
-prismaAdapter.createUser = (data) => {
+prismaAdapter.createUser = async (data) => {
 	const role = 'MEMBER' as Role;
 	const payload = {
 		...data,

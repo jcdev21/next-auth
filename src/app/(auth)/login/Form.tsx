@@ -32,6 +32,9 @@ export default function FormLogin() {
 		}
 	};
 
+	const clickBtnGoogleHandle = async () =>
+		await signIn('google', { redirect: false });
+
 	return (
 		<div className="h-screen flex flex-col justify-center items-center gap-4">
 			{registered === 'success' ? (
@@ -67,7 +70,7 @@ export default function FormLogin() {
 					<button
 						type="button"
 						className="bg-slate-400 p-2"
-						onClick={() => signIn('google', { redirect: false })}
+						onClick={clickBtnGoogleHandle}
 					>
 						Google
 					</button>
