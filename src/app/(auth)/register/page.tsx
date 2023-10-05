@@ -5,7 +5,7 @@ import fs from 'fs';
 
 export default function Register() {
 	return (
-		<div className="w-screen h-screen flex justify-center items-center">
+		<div className="h-screen flex justify-center items-center">
 			<FormRegister />
 		</div>
 	);

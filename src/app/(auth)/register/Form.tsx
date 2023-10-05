@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 
@@ -75,6 +76,11 @@ export default function FormRegister() {
 			</div>
 			<div className="flex gap-5">
 				<button className="bg-slate-400 p-2">SignUp</button>
+			</div>
+			<div>
+				<Link href="/login" className="text-sky-400">
+					Back to Login
+				</Link>
 			</div>
 		</form>
 	);

@@ -33,7 +33,7 @@ export default function FormLogin() {
 	};
 
 	return (
-		<div className="w-screen h-screen flex flex-col justify-center items-center gap-4">
+		<div className="h-screen flex flex-col justify-center items-center gap-4">
 			{registered === 'success' ? (
 				<div className="bg-sky-200 p-4 rounded-lg">
 					<span className="font-semibold">
